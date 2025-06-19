@@ -1,0 +1,13 @@
+265--Lab - Comandos de solución de problemas del protocolo de Internet
+Internet Protocol Troubleshooting Commands
+
+1.Accessing the AWS Management Console
+2.Use SSH to connect to an Amazon Linux EC2 instance.
+Change directory cd to the directory where the labsuser.pem file was downloaded
+cd ~/Downloads
+3.Change the permissions on the key to be read-only (4 = Read permission), by running this command:
+chmod 400 labsuser.pem
+4.Return to the EC2 Console and select Instances.
+ssh -i labsuser.pem ec2-user@44.247.54.216
+Troubleshoot Layer 3 (network): The ping and traceroute commands
+
