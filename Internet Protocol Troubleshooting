@@ -9,5 +9,16 @@ cd ~/Downloads
 chmod 400 labsuser.pem
 4.Return to the EC2 Console and select Instances.
 ssh -i labsuser.pem ec2-user@44.247.54.216
-Troubleshoot Layer 3 (network): The ping and traceroute commands
+5.Troubleshoot Layer 3 (network): The ping and traceroute commands.
+ping 8.8.8.8 -c 5
+6.Use traceroute comand. (Three asterisks (***) indicate a failed hop.):
+traceroute 8.8.8.8
+Layer 4 (transport): The netstat and telnet commands
 
+Case: Your company is running a routine security scan and found that one of the ports on a certain subnet is compromised. 
+To confirm, you run the netstat command on a local host on that subnet to confirm if the port is listening when it shouldn't be. 
+7. Confirms established connections by:
+netstat -tp
+
+8.Outputs listening services:
+netstat -tlp: 
