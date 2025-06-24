@@ -281,18 +281,19 @@ aws iam attach-user-policy --policy-arn arn:aws:iam::aws:policy/
     }
 ]
 
---user-name oksanafadyeyeva
+--user-name awsS3user
 
+To verify that policy is attached:
+
+aws iam list-attached-user-policies --user-name awsS3user
 
 
 ###Return to the AWS Management Console, and refresh the browser tab.
 
  
 
-Task 5: Adjust S3 bucket permissions
-On the AWS Management Console, on the Amazon S3 console, choose your bucket name.
-
-Go to permissions, under Block public access (bucket settings), choose Edit
+###Task 5: Adjust S3 bucket permissions
+On the AWS Management Console, on the Amazon S3 console, choose your bucket name, Go to permissions
 
 DeSelect/UnSelect Block all public access
 
@@ -322,22 +323,23 @@ You should see a file named index.html and directories named css and images.
 
  
 
-Task 7: Upload files to Amazon S3 by using the AWS CLI
+###Task 7: Upload files to Amazon S3 by using the AWS CLI
 Once the files are extracted, you upload the contents of the file to Amazon S3. These files include what you explored when you ran the ls command.
 
-So that the bucket can function as a website, replace <my-bucket> in the following command with your bucket name, and run the adjusted command. 
+aws s3 website s3://oksanafadyeyeva/ --index-document index.html
 
-aws s3 website s3://<my-bucket>/ --index-document index.html
+
 This process helps ensure that the index.html file will be known as the index document.
 
-To upload the files to the bucket, replace <my-bucket> in the following command with your bucket name, and run the adjusted command:
 
-aws s3 cp /home/ec2-user/sysops-activity-files/static-website/ s3://<my-bucket>/ --recursive --acl public-read
+aws s3 cp /home/ec2-user/sysops-activity-files/static-website/ s3://oksanafadyeyeva/ --recursive --acl public-read
+
+
 Notice that the upload command includes an access control list (ACL) parameter. This parameter specifies that the uploaded files have public read access. It also includes the recursive parameter, which indicates that all files in the current directory on your machine should be uploaded.
 
 To verify that the files were uploaded, replace <my-bucket> in the following command with your bucket name, and run the adjusted command:
 
-aws s3 ls <my-bucket>
+aws s3 ls oksanafadyeyeva
 On the AWS Management Console, on the Amazon S3 console, choose your bucket name.
 
 Choose the Properties tab. At the bottom of the this tab, note that Static website hosting is Enabled. Running the aws s3 website AWS CLI command turns on the static website hosting for an Amazon S3 bucket. This option is usually turned off by default.
@@ -365,7 +367,7 @@ To enter edit mode in the VI editor, press i
 
 Next, you add the standard first line of a bash file and then add the s3 cp line from your history. To do so, replace <my-bucket> in the following command with your bucket name, and copy and paste the adjusted command into your file:
 
-#!/bin/bash aws s3 cp /home/ec2-user/sysops-activity-files/static-website/ s3://<my-bucket>/ --recursive --acl public-read
+#!/bin/bash aws s3 cp /home/ec2-user/sysops-activity-files/static-website/ s3://oksanafadyeyeva/ --recursive --acl public-read
 To write the changes and quit the file, press Esc, enter :wq and then press Enter.
 
 To make the file an executable batch file, run the following command:
@@ -374,51 +376,17 @@ chmod +x update-website.sh
 To open the local copy of the index.html file in a text editor, run the following command:
 
 vi sysops-activity-files/static-website/index.html
-To enter edit mode in the VI editor, press i and modify the file as follows:
-
-Locate the first line that has the HTML code bgcolor="aquamarine" and change this code to bgcolor="gainsboro"
-
-Locate the line that has the HTML code bgcolor="orange" and change this code to bgcolor="cornsilk"
-
-Locate the second line that has the HTML code bgcolor="aquamarine" and change this code to bgcolor="gainsboro"
-
-To write the changes and quit the file, press Esc, enter :wq and then press Enter.
 
 To update the website, run your batch file.
 
 ./update-website.sh
+
 Note: The command line output should show that the files were copied to Amazon S3.
-
 To see the changes to the website, return to the browser and refresh the Café and Bakery page.
-
 Congratulations, you just made your first revision to the website!
-
 You now have a tool (the script that you created) that you can use to push changes from your website source files to Amazon S3.
 
-Optional challenge
-Did you notice that your batch file uploads every file to Amazon S3 every time you run it even when most of the files have no changes to them?
 
-Take a look at the following document: AWS CLI reference documentation for sync.
 
-Make a small noticeable change to the index.html file. For example, modify one of the colors, and save the change.
 
-Run the updated batch file.
-
-To help make your script more efficient, you replace the aws s3 cp command that you've been using with the aws s3 sync command from this document. The following is an example of the aws s3 sync command that you run in the SSH terminal window. In this command, replace <my-bucket> with your bucket name.
-
-aws s3 sync /home/ec2-user/sysops-activity-files/static-website/<s3://<my-bucket>/ --acl public-read 
-Refresh the Café and Bakery site to see your changes.
-
-How was the aws s3 sync command more efficient than the aws s3 cp command? Did the aws s3 sync command update just the index.html file or upload all the files like the aws s3 sync command?
-
- 
-
-Conclusion
-Congratulations! You now have successfully done the following:
-
-Ran AWS CLI commands that use IAM and Amazon S3 services
-
-Deployed a static website to an S3 bucket
-
-Created a script that uses the AWS CLI to copy files in a local directory to Amazon S3
 
