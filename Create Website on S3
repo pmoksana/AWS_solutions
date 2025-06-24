@@ -8,19 +8,16 @@ Upload files to Amazon S3 to host a simple website for the Café & Bakery.
 Create a batch file that can be used to update the static website when you change any of the website files locally.
 A client with the website URL is deployed through Amazon S3.
 
-Clients will be able to access the website you have deployed to Amazon S3. The website URL is similar to this example: http://.s3-website-us-west-2.amazonaws.com. You can create and access the bucket through the AWS Management Console or the AWS CLI. 
 
-Objectives
-After completing this lab, you should be able to:
+
+Expirience:
+
 
 Run AWS CLI commands that use IAM and Amazon S3 services.
-
 Deploy a static website to an S3 bucket.
-
 Create a script that uses the AWS CLI to copy files in a local directory to Amazon S3.
 
-Duration
-This activity requires approximately 45 minutes to complete.
+Solution:
 
 Accessing the AWS Management Console
 At the top of these instructions, choose Start Lab to launch the lab.
