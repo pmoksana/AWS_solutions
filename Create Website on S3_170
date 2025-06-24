@@ -1,0 +1,424 @@
+###Creating a Website on S3
+
+###Objective:
+Create an Amazon Simple Storage Service (Amazon S3) bucket.
+Create a new AWS Identity and Access Management (IAM) user that has full access to the Amazon S3 service.
+Upload files to Amazon S3 to host a simple website for the Café & Bakery.
+Create a batch file that can be used to update the static website when you change any of the website files locally.
+A client with the website URL is deployed through Amazon S3.
+
+
+
+###Expirience:
+Run AWS CLI commands that use IAM and Amazon S3 services.
+Deploy a static website to an S3 bucket.
+Create a script that uses the AWS CLI to copy files in a local directory to Amazon S3.
+
+###Solution:
+
+
+
+###Task 1: Connect to an Amazon Linux EC2 instance  using AWS Systems Manager Session Manager.
+Connect running Instance
+
+###Change the user and home directory:
+
+sudo su -l ec2-user
+pwd
+
+ 
+###Task 2: Configure the AWS CLI
+###Update the AWS CLI software with credentials.
+
+aws configure
+  
+
+###Configure the following:
+
+AWS Access Key ID [None]:       AKIARN7YIAJ47WCVXWSI
+AWS Secret Access Key [None]: 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
+Default region name [None]: us-west-2
+Default output format [None]: json
+[ec2-user@ip-10-200-0-27 ~]$
+
+
+
+###Task 3: Create an S3 bucket using the AWS CLI for region us-west-2
+
+aws s3api create-bucket --bucket oksanafadyeyeva --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
+
+If the command is successful, you will get a JSON-formatted response with a Location name-value pair, where the value reflects the bucket name. The following is an example:
+
+{
+        "Location": "http://twhitlock256.s3.amazonaws.com/"
+
+}
+
+#Check existed bucket names in AWS
+aws s3 ls
+
+###Task 4: Create a new IAM user that has full access to Amazon S3
+
+
+Using the AWS CLI, create a new IAM user and login for username awsS3user: 
+
+aws iam create-user --user-name awsS3user
+aws iam create-login-profile --user-name awsS3user --password Training123!
+Account ID number 098767995513
+
+#In the terminal window, to find the AWS managed policy that grants full access to Amazon S3, run the following command:
+
+aws iam list-policies --query "Policies[?contains(PolicyName,'S3')]"
+
+###Grant the awsS3user user full access to the S3 bucket, replace <policyYouFound> in following command with the appropriate PolicyName from the results, and run the adjusted command:
+aws iam attach-user-policy --policy-arn arn:aws:iam::aws:policy/<policyYouFound> --user-name oksanafadyeyeva
+
+aws iam attach-user-policy --policy-arn arn:aws:iam::aws:policy/
+[
+    {
+        "PolicyName": "AmazonS3FullAccess",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2015-02-06T18:40:58Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAIFIR6V6BVTRAHWINE",
+        "DefaultVersionId": "v2",
+        "Path": "/",
+        "Arn": "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+        "UpdateDate": "2021-09-27T20:16:37Z"
+    },
+    {
+        "PolicyName": "AmazonS3ReadOnlyAccess",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2015-02-06T18:40:59Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAIZTJ4DXE7G6AGAE6M",
+        "DefaultVersionId": "v3",
+        "Path": "/",
+        "Arn": "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+        "UpdateDate": "2023-08-10T21:31:39Z"
+    },
+    {
+        "PolicyName": "AmazonDMSRedshiftS3Role",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2016-04-20T17:05:56Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAI3CCUQ4U5WNC5F6B6",
+        "DefaultVersionId": "v3",
+        "Path": "/service-role/",
+        "Arn": "arn:aws:iam::aws:policy/service-role/AmazonDMSRedshiftS3Role",
+        "UpdateDate": "2019-07-08T18:19:14Z"
+    },
+    {
+        "PolicyName": "QuickSightAccessForS3StorageManagementAnalyticsReadOnly",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2017-06-12T18:18:38Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAIFWG3L3WDMR4I7ZJW",
+        "DefaultVersionId": "v4",
+        "Path": "/service-role/",
+        "Arn": "arn:aws:iam::aws:policy/service-role/QuickSightAccessForS3StorageManagementAnalyticsReadOnly",
+        "UpdateDate": "2019-10-08T23:53:11Z"
+    },
+    {
+        "PolicyName": "AmazonS3OutpostsFullAccess",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2020-10-02T17:26:30Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4BKMLUXKOR",
+        "DefaultVersionId": "v1",
+        "Path": "/",
+        "Arn": "arn:aws:iam::aws:policy/AmazonS3OutpostsFullAccess",
+        "UpdateDate": "2020-10-02T17:26:30Z"
+    },
+    {
+        "PolicyName": "AmazonS3OutpostsReadOnlyAccess",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2020-10-02T18:55:58Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4PJ2AX4CUB",
+        "DefaultVersionId": "v1",
+        "Path": "/",
+        "Arn": "arn:aws:iam::aws:policy/AmazonS3OutpostsReadOnlyAccess",
+        "UpdateDate": "2020-10-02T18:55:58Z"
+    },
+    {
+        "PolicyName": "S3StorageLensServiceRolePolicy",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2020-11-18T18:15:40Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4IHOVJESMS",
+        "DefaultVersionId": "v1",
+        "Path": "/aws-service-role/",
+        "Arn": "arn:aws:iam::aws:policy/aws-service-role/S3StorageLensServiceRolePolicy",
+        "UpdateDate": "2020-11-18T18:15:40Z"
+    },
+    {
+        "PolicyName": "IVSRecordToS3",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2020-12-05T00:10:43Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4M65NGVKOJ",
+        "DefaultVersionId": "v1",
+        "Path": "/aws-service-role/",
+        "Arn": "arn:aws:iam::aws:policy/aws-service-role/IVSRecordToS3",
+        "UpdateDate": "2020-12-05T00:10:43Z"
+    },
+    {
+        "PolicyName": "AmazonS3ObjectLambdaExecutionRolePolicy",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2021-08-18T10:07:41Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4PG47VBSXA",
+        "DefaultVersionId": "v1",
+        "Path": "/service-role/",
+        "Arn": "arn:aws:iam::aws:policy/service-role/AmazonS3ObjectLambdaExecutionRolePolicy",
+        "UpdateDate": "2021-08-18T10:07:41Z"
+    },
+    {
+        "PolicyName": "AWSBackupServiceRolePolicyForS3Restore",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2022-02-18T17:39:37Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4KPHGRYXGS",
+        "DefaultVersionId": "v2",
+        "Path": "/",
+        "Arn": "arn:aws:iam::aws:policy/AWSBackupServiceRolePolicyForS3Restore",
+        "UpdateDate": "2023-02-07T00:06:00Z"
+    },
+    {
+        "PolicyName": "AWSBackupServiceRolePolicyForS3Backup",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2022-02-18T17:40:24Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4CGZAHUZ2D",
+        "DefaultVersionId": "v4",
+        "Path": "/",
+        "Arn": "arn:aws:iam::aws:policy/AWSBackupServiceRolePolicyForS3Backup",
+        "UpdateDate": "2024-05-17T17:12:03Z"
+    },
+    {
+        "PolicyName": "AWSS3OnOutpostsServiceRolePolicy",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2023-10-03T20:32:36Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4PIWKEWQEU",
+        "DefaultVersionId": "v1",
+        "Path": "/aws-service-role/",
+        "Arn": "arn:aws:iam::aws:policy/aws-service-role/AWSS3OnOutpostsServiceRolePolicy",
+        "UpdateDate": "2023-10-03T20:32:36Z"
+    },
+    {
+        "PolicyName": "S3UnlockBucketPolicy",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2024-11-06T21:55:56Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4OALTIPZOF",
+        "DefaultVersionId": "v1",
+        "Path": "/root-task/",
+        "Arn": "arn:aws:iam::aws:policy/root-task/S3UnlockBucketPolicy",
+        "UpdateDate": "2024-11-06T21:55:56Z"
+    },
+    {
+        "PolicyName": "AWSQuickSetupSSMDeploymentS3BucketRolePolicy",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2024-11-15T22:01:44Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4F55XLDAMB",
+        "DefaultVersionId": "v1",
+        "Path": "/",
+        "Arn": "arn:aws:iam::aws:policy/AWSQuickSetupSSMDeploymentS3BucketRolePolicy",
+        "UpdateDate": "2024-11-15T22:01:44Z"
+    },
+    {
+        "PolicyName": "AmazonS3TablesReadOnlyAccess",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2024-12-03T15:21:06Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4CWAS4ILUK",
+        "DefaultVersionId": "v1",
+        "Path": "/",
+        "Arn": "arn:aws:iam::aws:policy/AmazonS3TablesReadOnlyAccess",
+        "UpdateDate": "2024-12-03T15:21:06Z"
+    },
+    {
+        "PolicyName": "AmazonS3TablesFullAccess",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2024-12-03T15:21:07Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4OUBBEQLZN",
+        "DefaultVersionId": "v1",
+        "Path": "/",
+        "Arn": "arn:aws:iam::aws:policy/AmazonS3TablesFullAccess",
+        "UpdateDate": "2024-12-03T15:21:07Z"
+    },
+    {
+        "PolicyName": "AmazonS3TablesLakeFormationServiceRole",
+        "PermissionsBoundaryUsageCount": 0,
+        "CreateDate": "2025-06-19T19:07:07Z",
+        "AttachmentCount": 0,
+        "IsAttachable": true,
+        "PolicyId": "ANPAZKAPJZG4OK2X3BMV2",
+        "DefaultVersionId": "v1",
+        "Path": "/service-role/",
+        "Arn": "arn:aws:iam::aws:policy/service-role/AmazonS3TablesLakeFormationServiceRole",
+        "UpdateDate": "2025-06-19T19:07:07Z"
+    }
+]
+
+--user-name oksanafadyeyeva
+
+
+
+###Return to the AWS Management Console, and refresh the browser tab.
+
+ 
+
+Task 5: Adjust S3 bucket permissions
+On the AWS Management Console, on the Amazon S3 console, choose your bucket name.
+
+Go to permissions, under Block public access (bucket settings), choose Edit
+
+DeSelect/UnSelect Block all public access
+
+Choose Save changes (confirm on the prompt)
+
+On to permissions tab, under Object Ownership, choose Edit
+
+Choose ACLs enabled
+
+Choose I acknowledge that ACLs will be restored.
+
+Choose Save changes
+
+ 
+
+Task 6: Extract the files that you need for this lab
+A file containing the static-website contents for the Amazon S3 bucket will need to be extracted in the following step.
+
+Back in the SSH terminal, extract the files that you need for this lab by running the following commands:
+
+cd ~/sysops-activity-files
+tar xvzf static-website-v2.tar.gz
+cd static-website
+To confirm that the files were extracted correctly, run the ls command. 
+
+You should see a file named index.html and directories named css and images.
+
+ 
+
+Task 7: Upload files to Amazon S3 by using the AWS CLI
+Once the files are extracted, you upload the contents of the file to Amazon S3. These files include what you explored when you ran the ls command.
+
+So that the bucket can function as a website, replace <my-bucket> in the following command with your bucket name, and run the adjusted command. 
+
+aws s3 website s3://<my-bucket>/ --index-document index.html
+This process helps ensure that the index.html file will be known as the index document.
+
+To upload the files to the bucket, replace <my-bucket> in the following command with your bucket name, and run the adjusted command:
+
+aws s3 cp /home/ec2-user/sysops-activity-files/static-website/ s3://<my-bucket>/ --recursive --acl public-read
+Notice that the upload command includes an access control list (ACL) parameter. This parameter specifies that the uploaded files have public read access. It also includes the recursive parameter, which indicates that all files in the current directory on your machine should be uploaded.
+
+To verify that the files were uploaded, replace <my-bucket> in the following command with your bucket name, and run the adjusted command:
+
+aws s3 ls <my-bucket>
+On the AWS Management Console, on the Amazon S3 console, choose your bucket name.
+
+Choose the Properties tab. At the bottom of the this tab, note that Static website hosting is Enabled. Running the aws s3 website AWS CLI command turns on the static website hosting for an Amazon S3 bucket. This option is usually turned off by default.
+
+To open the URL on a new page, choose the Bucket website endpoint URL that displays.
+
+Congratulations, you have created a static website that is available to the public for viewing!
+
+Task 8: Create a batch file to make updating the website repeatable
+To create a repeatable deployment, you create a batch file by using the VI editor. 
+
+In the terminal window, to pull up the history of recent commands, run the following command:
+
+history
+Locate the line where you ran the aws s3 cp command. You will put this line in your new batch file.
+
+To change directories and create an empty file, run the following command in the SSH terminal session:
+
+cd ~
+touch update-website.sh
+To open the empty file in the VI editor, run the following command.
+
+vi update-website.sh
+To enter edit mode in the VI editor, press i
+
+Next, you add the standard first line of a bash file and then add the s3 cp line from your history. To do so, replace <my-bucket> in the following command with your bucket name, and copy and paste the adjusted command into your file:
+
+#!/bin/bash aws s3 cp /home/ec2-user/sysops-activity-files/static-website/ s3://<my-bucket>/ --recursive --acl public-read
+To write the changes and quit the file, press Esc, enter :wq and then press Enter.
+
+To make the file an executable batch file, run the following command:
+
+chmod +x update-website.sh
+To open the local copy of the index.html file in a text editor, run the following command:
+
+vi sysops-activity-files/static-website/index.html
+To enter edit mode in the VI editor, press i and modify the file as follows:
+
+Locate the first line that has the HTML code bgcolor="aquamarine" and change this code to bgcolor="gainsboro"
+
+Locate the line that has the HTML code bgcolor="orange" and change this code to bgcolor="cornsilk"
+
+Locate the second line that has the HTML code bgcolor="aquamarine" and change this code to bgcolor="gainsboro"
+
+To write the changes and quit the file, press Esc, enter :wq and then press Enter.
+
+To update the website, run your batch file.
+
+./update-website.sh
+Note: The command line output should show that the files were copied to Amazon S3.
+
+To see the changes to the website, return to the browser and refresh the Café and Bakery page.
+
+Congratulations, you just made your first revision to the website!
+
+You now have a tool (the script that you created) that you can use to push changes from your website source files to Amazon S3.
+
+Optional challenge
+Did you notice that your batch file uploads every file to Amazon S3 every time you run it even when most of the files have no changes to them?
+
+Take a look at the following document: AWS CLI reference documentation for sync.
+
+Make a small noticeable change to the index.html file. For example, modify one of the colors, and save the change.
+
+Run the updated batch file.
+
+To help make your script more efficient, you replace the aws s3 cp command that you've been using with the aws s3 sync command from this document. The following is an example of the aws s3 sync command that you run in the SSH terminal window. In this command, replace <my-bucket> with your bucket name.
+
+aws s3 sync /home/ec2-user/sysops-activity-files/static-website/<s3://<my-bucket>/ --acl public-read 
+Refresh the Café and Bakery site to see your changes.
+
+How was the aws s3 sync command more efficient than the aws s3 cp command? Did the aws s3 sync command update just the index.html file or upload all the files like the aws s3 sync command?
+
+ 
+
+Conclusion
+Congratulations! You now have successfully done the following:
+
+Ran AWS CLI commands that use IAM and Amazon S3 services
+
+Deployed a static website to an S3 bucket
+
+Created a script that uses the AWS CLI to copy files in a local directory to Amazon S3
+
