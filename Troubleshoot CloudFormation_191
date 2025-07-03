@@ -17,91 +17,23 @@ Troubleshoot a failed delete-stack action.
  
 
 Business case:
-A new request from the Café leadership team
 
-cafe scene
-
-Sofîa is discussing the AWS deployment that is used by the Café with Olivia. Sofîa mentioned that Martha and Frank would like both her and Nikhil to have the skills to build infrastructure as code (IaC). Olivia suggested that as a first attempt, Sofîa should try working on a proof of concept (POC).
-
-In this activity, you take on the role of Sofîa. See if you can create a deployment of a web server inside a custom VPC that you define, and perform this deployment by using an AWS CloudFormation template. You will also learn how to troubleshoot deployments so that you gain an understanding of how effective this technology can be.
+Sofîa is discussing the AWS deployment that is used by the Café with Olivia. 
+Sofîa mentioned that Martha and Frank would like both her and Nikhil to have the skills to build infrastructure as code (IaC). 
+Olivia suggested that as a first attempt, Sofîa should try working on a proof of concept (POC).
+In this activity, you take on the role of Sofîa.
+See if you can create a deployment of a web server inside a custom VPC that you define, and perform this deployment by using an AWS CloudFormation template. 
+You will also learn how to troubleshoot deployments so that you gain an understanding of how effective this technology can be.
 
  
 
 Solution:
  
-
-Launching the activity environment
-At the top of these instructions, click Start Lab to launch your lab.
-
-A Start Lab panel opens displaying the lab status.
-
-Wait until you see the message "Lab status: ready", then click the X to close the Start Lab panel.
-
  
 
-Task 1: Practice querying JSON-formatted data by using JMESPath
-In this first task, you will practice using the JMESPath JSON query language to return results from a JSON document.
+Task 1: Practice querying JSON-formatted data by using JMESPath via jmespath.org/.
 
-Open a new browser window and go to jmespath.org/.
-
-Tip: If possible, arrange the browser windows so that you can see these instructions and also see the jmespath.org window at the same time.
-
-On the JMESPath website, in the document window that currently displays the locations JSON document, copy the following JSON document (replacing the locations document):
-
-{
-  "desserts": [
-    {
-      "name": "Chocolate cake",
-      "price": "20.00"
-    },
-    {
-      "name": "Ice cream",
-      "price": "15.00"
-    },
-    {
-      "name": "Carrot cake",
-      "price": "22.00"
-    }
-  ]
-}
-Resize the JSON code panel in the browser window so that you can see the entire document, or as much of it as possible.
-
-In the Expression search box above the document, delete all the text. In the search box, enter desserts.
-
-The expression is immediately evaluated.
-
-Important: Do not press ENTER after you enter an expression in the search box. If you press ENTER, the entire page reloads with its original data.
-
-In the Result panel below the document, notice that all the content that is in the desserts part of the document is returned.
-
-Add [1] to the expression:
-
-desserts[1]
-Notice that only the second dessert element is displayed. The [] notation is used with an index, and it enables you to refer to a specific element of an array. Because JMESPath considers the first position in an array to be 0, 1 returns the second element.
-
-Retrieve only the value of the name attribute for the chocolate cake element. In the search box, enter:
-
-desserts[0].name
-The name of the first dessert element, "Chocolate cake", is returned.
-
-Tip: The . notation allows you to specify the name of an attribute in the document.
-
-Retrieve the values of both the name and price attributes of the chocolate cake element. In the search box, enter:
-
-desserts[0].[name,price]
-The name and price of the chocolate cake desert is displayed. The [] notation can also be used to define a list of attributes to return.
-
-Return the values of the name attribute for all three dessert elements, but without the prices.
-
-desserts[].name
-An empty array index [] or one with an asterisk [*] refers to all of the elements in an array.
-
-Now use a filter, instead of referring to elements by their position. Return the attributes of the carrot cake element:
-
-desserts[?name=='Carrot cake']
-Notice that you did not need to know the index of the element that you were searching for. The filter expression [? <expression>] returns the elements in the document that match the expression condition that you specify.
-
-Lastly, replace the JSON document with the following document, which describes resources in an AWS CloudFormation stack:
+Replace the JSON document with the following document, which describes resources in an AWS CloudFormation stack:
 
 {
     "StackResources": [
@@ -119,6 +51,7 @@ Lastly, replace the JSON document with the following document, which describes r
         }
     ]
 }
+
 Can you determine the correct JSMESPath expression to retrieve the LogicalResourceId of the EC2 instance resource? Try to figure it out on your own before you use the following solution.
 
 StackResources[?ResourceType == 'AWS::EC2::Instance'].LogicalResourceId
