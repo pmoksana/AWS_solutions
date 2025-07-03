@@ -52,19 +52,13 @@ Replace the JSON document with the following document, which describes resources
     ]
 }
 
-Can you determine the correct JSMESPath expression to retrieve the LogicalResourceId of the EC2 instance resource? Try to figure it out on your own before you use the following solution.
+###Determine the correct JSMESPath expression to retrieve the LogicalResourceId of the EC2 instance resource? 
+StackResources[?ResourceType=='AWS::EC2::Instance'].LogicalResourceId | [0]
 
-StackResources[?ResourceType == 'AWS::EC2::Instance'].LogicalResourceId
-When you complete the other tasks in this activity, you will notice that the instructions often have AWS CLI commands that include --query or --filter parameters. These parameters use JMSEPath expressions to filter the output that is returned by an AWS CLI command.
 
-You are encouraged to practice using what you learned in this first task—throughout this activity—while you use the AWS CLI.
-
- 
 
 Task 2: Troubleshooting and working with AWS CloudFormation stacks
-Task 2 starts with an EC2 instance named CLI Host, which is already created for you. It runs in the public subnet of a VPC named VPC2.
-
-You will first establish an SSH connection to the CLI Host so that you can work with the AWS CloudFormation service from there.
+Establish an SSH connection to the CLI Host so that you can work with the AWS CloudFormation service from there.
 
  
 
