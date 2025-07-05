@@ -1,0 +1,184 @@
+Managing Users and Groups
+ 
+ 
+Objectives
+  
+Create new users with a default password
+Create groups and assign the appropriate users
+Log in as different users
+ 
+Task 1: Use SSH to connect to an Amazon Linux EC2 instance
+  
+cd ~/Downloads
+chmod 400 labsuser.pem
+ssh -i labsuser.pem ec2-user@<public-ip>
+
+
+Task 2: Create Users based on the following table:
+
+First Name	Last Name	User ID	Job Role	Starting Password
+Alejandro	Rosalez	arosalez	Sales Manager	P@ssword1234!
+Efua	Owusu	eowusu	Shipping	P@ssword1234!
+Jane	Doe	jdoe	Shipping	P@ssword1234!
+Li	Juan	ljuan	HR Manager	P@ssword1234!
+Mary	Major	mmajor	Finance Manager	P@ssword1234!
+Mateo	Jackson	mjackson	CEO	P@ssword1234!
+Nikki	Wolf	nwolf	Sales Representative	P@ssword1234!
+Paulo	Santos	psantos	Shipping	P@ssword1234!
+Sofia	Martinez	smartinez	HR Specialist	P@ssword1234!
+Saanvi	Sarkar	ssarkar	Finance Specialist	P@ssword1234!
+Ensure that you are spelling the user IDs correctly so that these users can use default credentials to log in.
+
+###Add the first user from the list above, Alejandro Rosalez, enter 
+
+sudo useradd arosalez and press Enter.
+This step creates the user arosalez.
+
+Enter sudo passwd arosalez and press Enter.
+password P@ssword1234!
+
+Note
+When entering the password, nothing appears on the screen, so type your password and press Enter.
+
+To validate that users have been created:
+enter sudo cat /etc/passwd | cut -d: -f1 
+
+[ec2-user]$ sudo cat/etc/passwd | cut -d: -f1
+........
+ec2-user
+arosalez
+
+Use the sudo useradd <User ID> and sudo passwd <User ID> commands to add the remaining users from the table. Replace <User ID> with each User ID in the table at the beginning of this task.
+
+Validate that all users have been created:
+ sudo cat /etc/passwd | cut -d: -f1 
+
+[ec2-user]$ sudo cat /etc/passwd | cut -d: -f1
+........
+ec2-user
+arosalez
+eowusu
+jdoe
+ljuan
+mjackson
+mmajor
+nwolf
+psantos
+smartinez
+ssarkar
+ 
+
+Task 3: Create Groups of users and add users to the groups.
+
+Sales
+HR
+Finance
+Personnel
+CEO
+Shipping
+Managers
+
+1.Created these groups
+2.Add the users to the proper groups based on the information provided in the table in Task 2.   
+
+ 
+Watch out! Managers are personnel, but not all personnel are managers. Some users belong to multiple groups.
+
+Validate that you are in the home folder of your current user
+ pwd
+
+Create the Sales group:
+sudo groupadd Sales 
+
+Verify that the group was added:
+cat /etc/group and press Enter.
+
+...
+ec2-user:x:1000:
+......
+Sales:x:1014
+....
+Note
+
+The /etc/group file contains all the groups.
+
+Use the
+
+sudo groupadd <Group> command to add the remaining groups. 
+
+Replace <Group> with HR, Finance, Shipping, and Managers and CEO to create these groups.
+
+Verify that all the groups were added:
+cat /etc/group and press Enter.
+
+Sales:x:1014
+HR:x:1015
+Finance:x:1016
+Shipping:x:1017
+Managers:x:1018
+CEO:x:1019
+
+Add the user arosalez to the Sales group
+sudo usermod -a -G Sales arosalez
+
+Verify that the user was added:
+cat /etc/group and press Enter.
+
+....
+Sales:x:1014:arosalez
+....
+Use the sudo usermod -a -G <Group Name> <User ID> command to add the remaining users to the appropriate groups. Using the information in the following table, replace <Group Name> with the Group Name, and replace <User ID> with each user ID in the User IDs columns. 
+
+Group Name	User IDs	Group Name	User IDs	Group Name	User IDs
+Sales	arosaleznwolf	HR	ljuansmartinez	Finance	mmajorssarkar
+Shipping	eowusujdoepsantos	Managers	arosalezljuanmmajor	CEO	mjackson
+Add ec2-user to all groups.
+
+Check the group memberships:
+sudo cat /etc/group 
+
+Sales:x:1014:arosalez,nwolf,ec2-user
+HR:x:1015:ljuan,smartinez,ec2-user
+Finance:x:1016:mmajor,ssarkar,ec2-user
+Shipping:x:1017:eowusu,jdoe,psantos,ec2-user
+Managers:x:1018:arosalez,ljuan,mmajor,ec2-user
+CEO:x:1019:mjackson,ec2-user
+ 
+
+Task 4: Log in using the new users
+ 
+  su arosalez
+
+ password  P@ssword1234!  
+You are now logged in as arosalez.
+
+[arosalez@ec2-user]$
+ 
+Ensure that you are in the /home/ec2-user directory.
+
+Enter touch myFile.txt and press Enter.
+
+[arosalez@ec2-user]$ touch myFile.txt
+touch: cannot touch ‘myFile.txt’: Permission denied
+
+You receive this message because the user arosalez does not have permission to write files to the ec2-user home folder.
+
+
+sudo touch myFile.txt and press Enter.
+password P@ssword1234!  
+
+[arosalez@ec2-user]$ touch myFile.txt
+arosalez is not in the sudoers file.  This incident will be reported.
+
+You receive this message because the user arosalez is not on the list of the sudoers file. Sudoers are users who have special rights to run commands that require root rights. Only a few users should receive this permission.
+
+Exit 
+
+Switch to the previous user, ec2-user.
+
+Now you visualize the content of the /var/log/secure file.
+sudo cat /var/log/secure 
+ 
+Aug  9 14:45:55 ip-10-0-10-217 sudo: arosalez : user NOT in sudoers ; TTY=pts/1 ; PWD=/home/ec2-user ; USER=root ; COMMAND=/bin/touch myFile.txt
+You can see how a sudo and not permitted action was logged into the /var/log/secure file
+
